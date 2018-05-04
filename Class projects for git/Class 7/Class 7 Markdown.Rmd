@@ -1,0 +1,413 @@
+---
+title: "Bioinformatics Class7"
+author: "Me"
+date: "April 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Function practice
+
+We can source any file of R code with the 'source'() function
+
+Ctrl + Alt + I starts new code chunk
+
+Source function to find and load a file (text file, URL, etc)
+
+```{r}
+source("http://tinyurl.com/rescale-R")
+```
+
+Making sure things are here with ls function (lists things in global environment)
+
+```{r}
+ls()
+```
+
+Check our 'rescale'() function works
+
+```{r}
+rescale(1:10)
+```
+
+breaking 'rescale'()
+
+```{r, eval=FALSE}
+rescale(c(1:10, 'string'))
+```
+
+introducing 'warning'() and 'stop'() functions to provide warnings or stop function if input breaks function
+
+Checking if 'rescale2'() does any better
+
+```{r, eval=FALSE}
+rescale2(c(1:10, 'string'))
+```
+
+RMarkdown will not knit code if it has errors in it. Need to get rid of errors by either commenting out error lines, or changing '{r}' to '{r, eval=FALSE}' as seen in lines 38 and 46 of code (not accessible from html output)
+
+For more info on rmarkdown paramters, go to help tab or just google for rmarkdown cheasheet, Rstudio Docs. All documentation is available online but not in R's help tab 
+
+# Section 2 - approach to writing functions
+
+writing a function to evaluate whether two input vectors are both missing variables (have 'NA' in data)
+start with a simple definition of x and y, something you already know the answer to
+defining example of x and y
+
+x <- c(1,2,NA,3,NA)
+y <- c(NA,3,NA,3,4)
+
+answer should be 1 as only the third position has NA in both inputs x and y
+
+how to get started? Google a similar function
+
+## Function to find missing values in two datasets
+
+```{r}
+# Lets define an example x and y
+
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 3, NA, 3, 4)
+
+# vector of logicals to indicate what positions in vector x are 'NA'
+is.na(x)
+is.na(y)
+
+
+```
+
+```{r}
+# which function (from google search) tells you which results are na (i.e. true)
+
+which(is.na(x))
+```
+
+```{r}
+# flipping function, define which ones are not 'na'
+
+which(!is.na(x))
+```
+
+The sum() function - summing together values, which works on booleans/logicals as well - FALSE is numerically 0 and TRUE is numerically 1
+
+```{r}
+# how to find how many are NA? use sum() function as False is a boolean = 0 and True is a boolean = 1
+
+sum(is.na(x))
+```
+
+We have snippets to detect NA in one vector and report a logical vector, now how about both? When does True appear in both?
+
+How many TRUE things are in this vector? 
+
+```{r}
+# logical & used to specify that both inputs must be satisfied
+# now output is vector showing logicals where its true in both
+
+is.na(x) & is.na(y)
+
+# wrapping in a sum function now shows how many are true in new vector
+
+sum(is.na(x) & is.na(y))
+```
+
+First function from this snipper
+
+```{r}
+both_na <- function(x) {
+  sum(is.na(x) & is.na(y))
+}
+```
+
+Function now shows up in R environment
+
+### Testing function
+
+```{r}
+both_na(x, y)
+```
+
+GG
+
+Function parameters don't accomodate second vector
+
+```{r}
+both_na <- function(x,y) {
+  sum(is.na(x) & is.na(y))
+}
+
+both_na(x,y)
+```
+
+Function is simple enough, can't really simplify
+
+### Eejitproofing the function 
+
+Below code has: 
+
+x <- c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA)
+
+both_na(x, y1) works fine, but
+
+What will both_na(x, y2) return?
+
+Testing snippet reveals
+
+```{r, eval = FALSE}
+
+x <- c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA)
+
+both_na(x, y1)
+
+# What will this return?
+
+both_na(x, y2)
+```
+
+# key to troubleshooting functions, fail early and loudly
+
+both_na2 has already been sourced from earlier, lets view code on new function 'both_na2()'
+because I fucked up and changed the original both_na to both_na2 but have it accomodate both variables, I have overwritten the original both_na2 that Barry provided which had more usability. Hence I'm copying both_na2 from the slides and rerunning it
+
+
+```{r}
+both_na2 <- function(x, y) {
+if(length(x) != length(y)) {
+stop("Input x and y should be the same length")
+}
+sum( is.na(x) & is.na(y) )
+}
+
+View(both_na2)
+
+```
+
+
+Using this new function returns a useful error
+
+```{r}
+both_na2(x, y2)
+```
+
+
+### Refine and polish functions
+
+sourced both_na3 from earlier, running it provides good info and also saving info to vector 'ans'
+
+```{r}
+
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 3, NA, 3, 4)
+
+both_na3(x, y)
+
+ans <- both_na3(x, y)
+
+```
+
+run subset using '$' on 'ans' to show just the position where both are NA
+
+
+```{r}
+
+ans$which
+
+```
+
+# Finding intersections in data for 2 input genes from associated data
+
+Using same source from earlier, accessing df1 and df2 dataframes. Can simplify to single vectors accessing IDs, now what?
+
+```{r}
+
+# source("http://tinyurl.com/rescale-R")
+
+# Start with a simple version of the problem
+
+df1 <- data.frame(IDs=c("gene1", "gene2", "gene3"), 
+                  exp=c(2,1,1), stringsAsFactors=FALSE)
+
+df2 <- data.frame(IDs=c("gene2", "gene4", "gene3", "gene5"), 
+                  exp=c(-2, NA, 1, 2), stringsAsFactors=FALSE)
+
+# Simplify further to single vectors
+
+x <- df1$IDs
+y <- df2$IDs
+
+# Now what do we do?
+
+```
+
+## here is a useful function
+
+Calling vectors containing gene id
+
+```{r}
+x <- df1$IDs
+y <- df2$IDs
+
+x
+y
+
+```
+
+Step 1 of writing a function: search for existing functionality to get us started
+
+Googling yields function called 'intersect' 
+
+Test intersect
+
+```{r}
+intersect(x,y)
+```
+
+It does what it says, but what we want is a table that puts *all* associated info with intersecting genes based on rows - basically allows us to access relevant info and then merge into new data tale
+
+To start this, we need to know positions of intersecting data, basically the coordinates we need to access
+
+A useful section on documentation of functions is the 'see also' section. Lets try '%in%'
+
+Doc on %in% shows it returns a vector of positions of matches between 1st and second argument
+
+Testing it out
+
+```{r}
+
+x %in% y 
+
+```
+
+Prints out logicals, but notice it only goes for elements of x, the first argument. Evidence being it prints out vector of size 3, same as x
+
+What if we do y %in% x?
+
+```{r}
+y %in% x
+
+```
+
+Note last value has no correspondance in x, so returns FALSE
+
+Putting two functions together ( use both combinations for %in% function)
+```{r}
+intersect(x,y)
+x %in% y
+y %in% x
+
+```
+ 
+Putting it all into a matrix. We want a table at the end, %in% function spits out vectors but we want to combine those. Easiest way is to make a matrix/table and get a better intersection, lets use cbind() which binds things by columns
+
+This completes our working snippet
+ 
+```{r}
+cbind(x[x %in% y], y[ y %in% x])
+```
+
+Now to make the first function
+
+```{r}
+
+gene_intersect <- function(x, y) {
+  cbind( x[ x %in% y ], y[ y %in% x ] )
+}
+
+```
+
+Test on x and y, remember it binds them by columns. So gene2 and gene3 intersect, as shown in columns
+
+```{r}
+gene_intersect(x, y)
+```
+
+So it takes vectors, but we want data frames for the input. Lets use df1 and df2 as sample inputs and adapt code accordingly. Basically, the code will use %in% on subsets of the dataframe (specified using $ operator) 
+
+```{r}
+gene_intersect2 <- function(df1, df2) { 
+   cbind( df1[ df1$IDs %in% df2$IDs, ], 
+          df2[ df2$IDs %in% df1$IDs, "exp"] )
+}
+
+```
+
+Testing
+
+```{r}
+gene_intersect2(df1, df2)
+```
+
+It works correctly, but the code isn't clear and the labels are janky. The other issue its hardwired to look for columns labeled 'ID'. It can't take any other column name either. Its a skateboard, not a Tesla
+
+Lets add flexibility by adding user to specify gene containing column
+
+First we should experiemnt by adding a column for gene column name
+
+# Experiment first to make sure things are as we expect
+
+adding new paramater that allows input to be transferred into correct ID
+
+gene.colname="IDs"
+
+df1[,gene.colname]
+
+output: 
+
+[1] "gene1" "gene2" "gene3"
+
+```{r}
+
+function(df1, df2, gene.colname="IDs") { 
+   cbind( df1[ df1[,gene.colname] %in% df2[,gene.colname], ], 
+          exp2=df2[ df2[,gene.colname] %in% df1[,gene.colname], "exp"] )
+}
+
+```
+
+
+Testing it yields...
+
+```{r}
+gene_intersect3(df1, df2)
+```
+
+The function works but its not easy to read. It's time to simplify and make it look pretty
+
+```{r}
+gene_intersect4 <- function(df1, df2, gene.colname="IDs") { 
+
+  df1.name <- df1[,gene.colname]
+  df2.name <- df2[,gene.colname]
+
+  df1.inds <- df1.name %in% df2.name
+  df2.inds <- df2.name %in% df1.name
+
+   cbind( df1[ df1.inds, ], 
+          exp2=df2[ df2.inds, "exp"] )
+}
+
+```
+
+Now we can test, break, fix, and test again
+
+Lets make a df3 (already sourced) with an NA and a negative number. What happens when we run our function on it?
+
+```{r}
+gene_intersect4(df1, df3)
+```
+
+We can add multiple features to it... but its already been done in a function called merge 
+
+We already have function 'merge'() in environment, lets use it
+
+```{r}
+merge(df1, df2, by='IDs')
+```
+
