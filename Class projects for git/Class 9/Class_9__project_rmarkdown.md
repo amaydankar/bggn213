@@ -411,7 +411,7 @@ table(wisc.km$cluster)
 ```
 ## 
 ##   1   2 
-## 380 189
+## 189 380
 ```
 
 ```r
@@ -421,8 +421,8 @@ table(wisc.km$cluster, diagnosis)
 ```
 ##    diagnosis
 ##       0   1
-##   1 343  37
-##   2  14 175
+##   1  14 175
+##   2 343  37
 ```
 
 14 false positives arise from this comparison, and 37 false negatives. Thats pretty bad since we're analysing cancer diagnoses
