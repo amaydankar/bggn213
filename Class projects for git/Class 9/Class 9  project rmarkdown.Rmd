@@ -1,0 +1,298 @@
+---
+title: "Class 9 Project"
+author: "Amay Dankar"
+date: "May 2, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# importing csv file of tumor cell nuclei characteristics 
+
+wisc.df <- read.csv('https://bioboot.github.io/bggn213_S18/class-material/WisconsinCancer.csv')
+
+# preview of data
+
+head(wisc.df)
+
+```
+
+How many diagnoses are cancer vs. non-cancer (based on M/B diagnosis indicating Malignant vs. Benign)
+
+```{r}
+# summary of number of samples belonging to each factor/group (M vs. B) 
+
+table(wisc.df$diagnosis)
+
+```
+
+We want column 3 to be start of data, we are not worried about patient ID or diagnosis for our predictive model as they are not measured in dataset
+
+```{r}
+# begin with conversion of dataframe to matrix and removal of first two columns
+
+# handy way to exclude data is specifying with a '-' sign before the columns/rows to be removed
+
+# deleting out problem column 'X' at column position 33 (last column)
+
+# wisc.df$X contains NA values only
+ncol(wisc.df)
+
+wisc.data <- as.matrix(wisc.df[,-c(1:2,33)])
+
+# setting row names of wisc.data
+
+row.names(wisc.data) <- wisc.df$id
+
+# creating 'diagnosis' vector by coercing M and B values to 1 and 0 respectively
+# == sign is used to run a check on data to see whether each value is a True or False depending on what you're checking against
+# remember that logicals are coerced to 0 for false and 1 for true
+
+diagnosis <- as.numeric(wisc.df$diagnosis == 'M')
+
+head(diagnosis)
+
+# check to make sure this sum matches up to number of 'M' samples, or 212
+sum(diagnosis)
+
+# taking a look at trimmed data
+head(wisc.data)
+
+```
+
+#Exploratory Data Analysis
+
+
+```{r}
+# How many observations are in this dataset?
+
+dim(wisc.data)
+nrow(wisc.data)
+
+# How many variables/features in the data are suffixed with _mean?
+
+#grep('_mean', colnames(wisc.data), value = TRUE, invert = TRUE)
+
+length(grep('_mean', colnames(wisc.data)))
+
+# How many of the observations have a malignant diagnosis?
+
+table(wisc.df$diagnosis)
+
+```
+
+# Performing PCA 
+
+First question: Should we scale our data? 
+Common reasons: 
+
+input variables use different units of measurement OR
+input variables have significantly different variances
+
+Check means and sd of each column to see if data needs to be scaled
+
+This data frame has a very strange column called 'X' that interferes with PCA analysis, it will be deleted out
+
+```{r}
+colMeans(wisc.data)
+
+apply(wisc.data, 2, sd)
+
+# this looks messy and hard to read, just plot the data
+ncol(wisc.data)
+plot(colMeans(wisc.data), type = 'h')
+
+```
+
+
+So yeah we should scale it
+
+```{r}
+
+wisc.pr <- prcomp(wisc.data, scale = TRUE)
+
+summary(wisc.pr)
+
+```
+
+
+Proportion of variance shows how much % variance occurs from each column. The cumulative proportion simply sums up the % variance from each column until 100% is reached
+
+## PCA Results plots
+
+x is our actual result every PC analysis comparison made, here we plot the first 2 PC analyses just for starters. Ideally we do it for all of them to pinpoint where each difference is
+
+This is why proportion of variance becomes relevant, note that PC1 (wisc.pr$x[,1]) explains 44% of variance alone!
+
+```{r}
+View(wisc.pr$x)
+
+# diagnosis is a vector with values of 0 or 1, col = 0 is white so we add 1 to the vector to change all white plot points to an actual color
+
+plot(wisc.pr$x[,1], wisc.pr$x[,2], col= diagnosis+1)
+
+```
+
+# Variance explained
+
+Scree-plots to determine "elbow" or where most of variance comes from. The elbow determines the cut off point
+
+```{r}
+# Variance explained by each principal component: pve
+pve <- wisc.pr$sdev^2 / sum(wisc.pr$sdev^2) 
+
+# Plot variance explained for each principal component
+plot(pve, xlab = "Principal Component", 
+     ylab = "Proportion of Variance Explained", 
+     ylim = c(0, 1), type = "o")
+```
+
+## Barplot for proportion of variance 
+
+```{r}
+#paste command makes a vector of strings with prefix specified in first paramater, and number specified in second
+
+barplot(pve, names.arg = paste("PC", 1:length(pve)), las = 2, axes = FALSE, ylab = "Proportion of Variance")
+axis(2, at = pve, labels = round(pve, 2)*100)
+```
+
+Q9 and 10 deal with mapping PC analyses back to original comparisons. Since PCA orders its analysis results by greatest proportion of variance to least, the original variables are lost and must be re-mapped with loading vectors. 
+
+# Section 3: Hierarchical Clustering
+
+```{r}
+
+#scale data
+data.scaled <- scale(wisc.data)
+
+#compute distance between scaled data points
+
+data.dist <- dist(data.scaled)
+
+#create hierarchical clustering model
+wisc.hclust <- hclust(data.dist)
+
+#plotting dendrogram
+plot(wisc.hclust)
+abline(h=20, col= 'red', lwd = 3)
+
+```
+
+This plot is too messy, we want to cut this tree using function "cutree()"
+
+Cutree can cut the plot into k  groups or cut at height h 
+
+```{r}
+
+wisc.hclust.clusters <- cutree(wisc.hclust, k = 4)
+
+```
+
+
+### How do these groups match our diagnosis vector?
+
+Using table function, we can cross-compare our clusters and our diagnosis
+
+```{r}
+
+table(wisc.hclust.clusters, diagnosis)
+
+```
+
+It appears cluster 1 and 3 capture something about the data also found by expert diagnoses of tumors
+
+## Kmeans to cluster same data
+
+```{r}
+wisc.km <- kmeans(scale(wisc.data), centers= 2, nstart= 20)
+table(wisc.km$cluster)
+table(wisc.km$cluster, diagnosis)
+
+```
+
+14 false positives arise from this comparison, and 37 false negatives. Thats pretty bad since we're analysing cancer diagnoses
+
+
+#  Section 5, clusering of PCA results
+
+```{r}
+## Use the distance along the first 7 PCs for clustering i.e. wisc.pr$x[, 1:7]
+wisc.pr.hclust <- hclust(dist(wisc.pr$x[, 1:3]), method='ward.D2')
+
+#cut into 4 clusters as before
+wisc.pr.hclust.clusters <- cutree(wisc.pr.hclust, k=2)
+plot(wisc.pr.hclust)
+
+#comparing to diagnosis
+
+table(wisc.pr.hclust.clusters, diagnosis)
+
+plot(wisc.pr$x[, 1:2], col = wisc.pr.hclust.clusters)
+
+
+```
+
+
+# Predicting malignancy of new samples
+
+```{r}
+
+#obtaining data for new samples
+url <- 'https://tinyurl.com/new-samples-CSV'
+new <- read.csv(url)
+
+#predict function runs PCA analysis we just went through
+npc <- predict(wisc.pr, newdata = new)
+
+#plotting original samples from wisconsin set
+plot(wisc.pr$x[,1:2], col = wisc.pr.hclust.clusters)
+
+#adding new Illinois patients
+points(npc[,1], npc[,2], col = c('purple','blue'), pch =16, cex = 3)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
