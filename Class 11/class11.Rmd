@@ -147,25 +147,137 @@ pdb.protein
 write.pdb(pdb.protein, file = "1hsg_protein.pdb")
 ```
 
+# Section 4 
+
+**Testing muscle.exe on examples**
+Downloading example PDB files
+
+```{r}
+# Download some example PDB files
+ids <- c("1TND_B","1AGR_A","1TAG_A","1GG2_A","1KJY_A","4G5Q_A")
+files <- get.pdb(ids, split = TRUE)
+```
+
+The get.pdb() function will download the requested files. Argument split = TRUE requests
+further that we want to extract particular chains, i.e. those specified by the _A suffix of each
+PDB ID in the example above. Note that these ids could come from the results of a
+blast.pdb() search as described in the next section.
+
+The requested chains are then aligned and their structural data stored in a new object pdbs that
+can be used for further analysis. The pdbaln() function includes the ability to superimpose, or
+fit, all structures onto each other using the argument fit = TRUE.
+
+```{r}
+# Extract and align the chains we are interested in
+pdbs <- pdbaln(files, fit = TRUE)
+
+```
+
+**Q9**: What effect does setting the fit=TRUE option have in the related rmsd() function?
+What does RMSD measure and what would the results indicate if you set fit=FALSE or
+removed this option? 
+
+**Answer**: fit = TRUE performs coordinate superposition before performing the RMSD calculation. The end result is a minimzation of the RMSD calculation by optimizing the rotation of the coordinate set in space to allow for spatial alignment of the coordinate set
+
+RMSD is used to measure structural distance between coordinate sets, i.e. measuring the distance between atoms in a 3D space
+
+HINT: Bio3D functions have various default options that will be used if the
+option is not explicitly specified by the user, see help(rmsd) for an example and note that the
+input options with an equals sign (e.g. fit=FALSE) have default values.
+
+# Section 5
+
+In this section we perform PCA on the complete collection of Adenylate kinase structures in the
+protein data-bank (PDB). Starting from only one PDB identifier (PDB ID 1AKE) we show how to
+search the PDB for related structures using BLAST, fetch and align the structures, and finally
+calculate the normal modes of each individual structure in order to probe for potential
+differences in structural flexibility.
+
+###5.1 Search and retrieve Adenylate kinase structures
+
+```{r}
+aa <- get.seq("1ake_A")
+
+# Blast or hmmer search
+b <- blast.pdb(aa)
+
+```
+
+Function plot.blast() facilitates the visualization and filtering of the Blast results. It will
+attempt to set a seed position to the point of largest drop-off in normalized scores (i.e. the
+biggest jump in E-values). In this particular case we specify a cutoff (after initial plotting) of 225
+to include only the relevant E.coli structures:
+
+```{r}
+# Plot a summary of search results
+hits <- plot(b)
+
+head(hits$pdb.id)
+
+```
+
+The Blast search and subsequent filtering identified a total of 39 related PDB structures to our
+query sequence. The PDB identifiers of this collection are accessible through the pdb.id
+attribute to the hits object (hits$pdb.id). Note that adjusting the cutoff argument (to
+plot.blast()) will result in a decrease or increase of hits.
+
+We can now use function get.pdb() and pdbslit() to fetch and parse the identified
+structures. Finally, we use pdbaln() to align the PDB structures.
+
+```{r}
+
+# fetch pdbs
+files <- get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip =
+TRUE)
+
+```
+
+```{r}
+
+#align structures
+pdbs <- pdbaln(files)
+
+#assign names 
+ids <- basename.pdb(pdbs$id)
+
+#final plot comparing pdb sequences
+plot(pdbs, labels=ids)
+```
 
 
+Schematic representation of alignment. Grey regions depict aligned residues, while
+white depict gap regions. The red bar at the top depict sequence conservation. 
+
+### Section 5.4 PCA analysis
+
+Function pca() provides principal component analysis (PCA) of the structure data. PCA is astatistical approach used to transform a data set down to a few important components thatdescribe the directions where there is most variance. In terms of protein structures PCA is used to capture major structural variations within an ensemble of structures.
+
+Function pca() provides principal component analysis (PCA) of the structure data. PCA is a statistical approach used to transform a data set down to a few important components that describe the directions where there is most variance. In terms of protein structures PCA is used to capture major structural variations within an ensemble of structures.
+
+PCA can be performed on the structural ensemble (stored in the pdbs object) with function
+pca.xyz(). To obtain meaningful results we first superimpose all structures on the invariant
+core (function core.find()).
+
+```{r}
+
+#find most structurally rigid (i.e. the core) sequence amongst all inputs
+core <- core.find(pdbs)
+```
 
 
+```{r}
+# superimpose all structures to core
+pdbs$xyz = pdbfit(pdbs, core)
+# Perform PCA
+pc.xray <- pca(pdbs)
 
+plot(pc.xray)
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+# Visualize first principal component
+pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
+```
 
 
 
