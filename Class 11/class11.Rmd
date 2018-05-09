@@ -44,6 +44,123 @@ pdb
 
 ```
 
+Q6. How many amino acid residues are there in this pdb object and what are the two nonprotein
+residues?
+
+198 based on "residues/calpha atoms#"
+
+Print a subset of $atom data for the first two atoms
+```{r}
+
+pdb$atom[1:2, c('eleno', 'elety', 'x', 'y', 'z')]
+
+```
+
+Note that individual $atom records can also be accessed like this
+
+
+```{r}
+pdb$atom$elety[1:2]
+```
+
+Which allows us to do the following
+
+```{r}
+plot.bio3d(pdb$atom$b[pdb$calpha], sse=pdb, typ="l", ylab= "B-factor")
+```
+
+What type of R object is pdb$atom? HINT: You can always use the str() function to get a
+useful summery of any R object.
+
+```{r}
+class(pdb$atom)
+```
+
+Note that the main xyz coordinate attribute is a numeric matrix with 3N columns (each atom has
+three values x, y and z). The number of rows here correspond to the number of models in the
+PDB file (typically one for X-ray structures and multiple for NMR structures).
+
+Print a summary of the coordinate data in $xyz
+
+```{r}
+print(pdb$xyz)
+
+# dimensions 
+dim(pdb$xyz)
+
+# Print coordinates for the first two atom
+
+pdb$xyz[1, atom2xyz(1:2)]
+
+```
+
+The Bio3D atom.select() function is arguably one of the most challenging for newcomers to
+master. It is however central to PDB structure manipulation and analysis. At its most basic, this
+function operates on PDB structure objects (as created by read.pdb()) and returns the
+numeric indices of a selected atom subset. These indices can then be used to access the
+$atom and $xyz attributes of PDB structure related objects.
+
+**Q8** Use the Bio3D write.pdb() function to write out a protein only PDB file for viewing in
+VMD. Also write out a second separate PDB file for the ligand with residue name MK1
+
+HINT: In Bio3D you can use the trim.pdb() function together with the pub object and your atom
+selections such as atom.select(pdb, ’protein’) for the fist file and atom.select(pdb, ‘ligand’) for
+the second.
+Page
+
+
+```{r}
+inds.ligand <- atom.select(pdb, "ligand")
+inds.protein <- atom.select(pdb, "protein")
+inds.protein
+```
+
+Note how xyz is 3 times the length of atom indices, makes sense as this give a 3d coordinate graph
+
+
+```{r}
+pdb$atom[inds.ligand$atom,]
+
+```
+
+```{r}
+pdb$atom[inds.protein$atom,]
+```
+
+This is desired data, but we need to put it into a file
+
+```{r}
+pdb.ligand <- trim.pdb(pdb, inds = inds.ligand)
+pdb.ligand
+```
+
+```{r}
+write.pdb(pdb.ligand,file = "1hsg_ligand.pdb")
+```
+
+Same code done for protease
+
+```{r}
+pdb.protein <- trim.pdb(pdb, inds = inds.protein)
+pdb.protein
+
+write.pdb(pdb.protein, file = "1hsg_protein.pdb")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
