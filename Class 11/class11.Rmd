@@ -27,3 +27,37 @@ names(percent) <- row.names(p)
 percent
 ```
 
+## Using bio3d
+
+Loading bio3d package
+
+```{r}
+library(bio3d)
+```
+
+Read in our HIV-Protease structure
+
+```{r}
+pdb <- read.pdb("1HSG")
+
+pdb
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
