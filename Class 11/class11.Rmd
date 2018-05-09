@@ -1,9 +1,27 @@
 ---
 title: "Untitled"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+## PDB Statistics
+
+Importing our PDB statistics CSV file and calculate percent strucutres by experimental method
+
+```{r}
+p <- read.csv("Data Export Summary.csv", row.names = 1)
+```
+
+Ho many total structures?
+
+```{r}
+percent <- (p$Total/ sum(p$Total)) * 100
+
+names(percent) <- row.names(p)
+
+percent
 ```
 
