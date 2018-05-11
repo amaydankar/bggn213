@@ -42,7 +42,15 @@ write.pdb(res, "results.pdb")
 
 ```
 
+```{r}
+ori <- read.pdb("1hsg_ligand.pdbqt")
+```
 
+Calculating Root Mean Square Distance (RMSD)
+
+```{r}
+rmsd(ori, res)
+```
 
 
 
