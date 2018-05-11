@@ -5,10 +5,6 @@ output:
     keep_md: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## PDB Statistics
 
 Importing our PDB statistics CSV file and calculate percent strucutres by experimental method
@@ -279,7 +275,19 @@ plot(pc.xray)
 pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
 ```
 
+```{r}
+b$hit.tbl
+```
 
+Testing developmental version of bio3d
+
+```{r}
+# MAC
+#install.packages("bio3d.tar.gz", repos=NULL) 
+# Windows
+
+#view(pc1)
+```
 
 
 
