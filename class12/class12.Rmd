@@ -6,10 +6,6 @@ output: github_document
 
 # Setup HIV-pr for docking study
 
-```{r}
-install.packages("bio3d")
-```
-
 Retrieving pdb file on protein
 ```{r}
 
