@@ -3,13 +3,12 @@ title: "class12"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 # Setup HIV-pr for docking study
 
+```{r}
+install.packages("bio3d")
+```
 
 Retrieving pdb file on protein
 ```{r}
@@ -38,7 +37,14 @@ protein <- trim.pdb(hiv, "protein")
 protein
 ```
 
+Inspecting docking results
 
+```{r}
+library(bio3d) 
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+
+```
 
 
 

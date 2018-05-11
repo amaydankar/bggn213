@@ -1,5 +1,5 @@
 receptor = 1hsg_protein.pdbqt
-ligand = ligand.pdbqt
+ligand = 1hsg_ligand.pdbqt
      
 num_modes = 50
 out = all.pdbqt
