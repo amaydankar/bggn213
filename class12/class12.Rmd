@@ -1,0 +1,133 @@
+---
+title: "class12"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Setup HIV-pr for docking study
+
+
+Retrieving pdb file on protein
+```{r}
+
+library(bio3d)
+file.name <- get.pdb("1hsg")
+
+```
+
+Read file in and trim out protein, small molecule ligand
+
+```{r}
+hiv <- read.pdb(file.name)
+hiv
+```
+
+```{r}
+ligand <- trim.pdb(hiv, "ligand")
+ligand
+```
+
+Extract protein
+
+```{r}
+protein <- trim.pdb(hiv, "protein")
+protein
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
