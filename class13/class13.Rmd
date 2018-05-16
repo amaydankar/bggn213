@@ -1,0 +1,95 @@
+---
+title: "Bioinformatics Class13"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1000 Genome project data
+
+Read 1000 genome data for mxl dataset
+
+```{r}
+genotype <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv")
+```
+
+Summarizing SNPs and finding frequency percentage in MXL population
+
+```{r}
+table(genotype[,2]) / nrow(genotype) * 100
+```
+
+Downloading packages for Galaxy analysis
+
+```{r}
+library(seqinr)
+library(gtools)
+phred <- asc( s2c("DDDDCDEDCDDDDBBDDDCC@") ) - 33
+phred
+
+```
+
+## Population Analysis 
+
+```{r}
+pop <- read.table("https://bioboot.github.io/bggn213_S18/class-material/rs8067378_ENSG00000172057.6.txt")
+summary(pop)
+numbgeno <- table(pop[,2])
+numbgeno
+percgeno <- numbgeno / nrow(pop) * 100
+percgeno
+```
+
+Obtaining median data by SNP 
+
+```{r}
+summary(pop$exp[pop$geno == "A/A"])
+summary(pop$exp[pop$geno == "A/G"])
+summary(pop$exp[pop$geno == "G/G"])
+```
+
+Plotting data
+```{r}
+
+boxplot(exp ~ geno, data = pop, notch = TRUE)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
