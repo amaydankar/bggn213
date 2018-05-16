@@ -57,7 +57,13 @@ boxplot(exp ~ geno, data = pop, notch = TRUE)
 
 ```
 
+## Same figure generated with ggplot
 
+```{r}
+library(ggplot2)
+ggplot(pop, aes(geno, exp)) + geom_boxplot(notch = TRUE)
+
+```
 
 
 
