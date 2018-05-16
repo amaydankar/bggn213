@@ -5,8 +5,6 @@ output:
     keep_md: yes
 ---
 
-
-
 ## PDB Statistics
 
 Importing our PDB statistics CSV file and calculate percent strucutres by experimental method
@@ -41,6 +39,10 @@ Loading bio3d package
 
 ```r
 library(bio3d)
+```
+
+```
+## Warning: package 'bio3d' was built under R version 3.4.4
 ```
 
 Read in our HIV-Protease structure
@@ -3422,30 +3424,6 @@ files <- get.pdb(ids, split = TRUE)
 ```
 
 ```
-## Warning in get.pdb(ids, split = TRUE): ./1TND.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(ids, split = TRUE): ./1AGR.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(ids, split = TRUE): ./1TAG.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(ids, split = TRUE): ./1GG2.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(ids, split = TRUE): ./1KJY.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(ids, split = TRUE): ./4G5Q.pdb exists. Skipping download
-```
-
-```
 ##   |                                                                         |                                                                 |   0%  |                                                                         |===========                                                      |  17%  |                                                                         |======================                                           |  33%  |                                                                         |================================                                 |  50%  |                                                                         |===========================================                      |  67%  |                                                                         |======================================================           |  83%  |                                                                         |=================================================================| 100%
 ```
 
@@ -3511,19 +3489,13 @@ differences in structural flexibility.
 
 ```r
 aa <- get.seq("1ake_A")
-```
 
-```
-## Warning in get.seq("1ake_A"): Removing existing file: seqs.fasta
-```
-
-```r
 # Blast or hmmer search
 b <- blast.pdb(aa)
 ```
 
 ```
-##  Searching ... please wait (updates every 5 seconds) RID = F6ZD2XW0014 
+##  Searching ... please wait (updates every 5 seconds) RID = FC6EACJK014 
 ##  .
 ##  Reporting 90 hits
 ```
@@ -3570,66 +3542,6 @@ structures. Finally, we use pdbaln() to align the PDB structures.
 # fetch pdbs
 files <- get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip =
 TRUE)
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/1AKE.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/4X8M.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/4X8H.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/3HPR.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/1E4V.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/5EJE.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/1E4Y.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/3X2S.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/4K46.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/4NP6.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/3GMT.pdb exists. Skipping download
-```
-
-```
-## Warning in get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip = TRUE):
-## pdbs/4PZL.pdb exists. Skipping download
 ```
 
 ```
@@ -3908,6 +3820,290 @@ pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
 ```
 
 
+```r
+b$hit.tbl
+```
+
+```
+##        queryid subjectids identity alignmentlength mismatches gapopens
+## 1  Query_34651     1AKE_A  100.000             214          0        0
+## 2  Query_34651     4X8M_A   99.533             214          1        0
+## 3  Query_34651     4X8H_A   99.533             214          1        0
+## 4  Query_34651     3HPR_A   99.533             214          1        0
+## 5  Query_34651     1E4V_A   99.533             214          1        0
+## 6  Query_34651     5EJE_A   99.065             214          2        0
+## 7  Query_34651     1E4Y_A   99.065             214          2        0
+## 8  Query_34651     3X2S_A   98.598             214          3        0
+## 9  Query_34651     4K46_A   73.239             213         57        0
+## 10 Query_34651     4NP6_A   72.642             212         58        0
+## 11 Query_34651     3GMT_A   62.500             216         75        1
+## 12 Query_34651     4PZL_A   57.346             211         86        2
+## 13 Query_34651     5G3Y_A   55.505             218         88        2
+## 14 Query_34651     5G3Z_A   50.459             218         99        2
+## 15 Query_34651     5G40_A   49.541             218        101        2
+## 16 Query_34651     5X6J_A   50.000             218         98        3
+## 17 Query_34651     2C9Y_A   53.723             188         83        1
+## 18 Query_34651     1S3G_A   49.541             218         99        3
+## 19 Query_34651     1AK2_A   52.660             188         85        1
+## 20 Query_34651     3BE4_A   48.611             216        102        3
+## 21 Query_34651     1AKY_A   46.119             219        108        3
+## 22 Query_34651     3AKY_A   46.119             219        108        3
+## 23 Query_34651     3FB4_A   48.165             218        104        2
+## 24 Query_34651     4QBI_A   47.248             218        106        2
+## 25 Query_34651     1DVR_A   45.205             219        110        3
+## 26 Query_34651     3DKV_A   49.772             219         99        3
+## 27 Query_34651     3DL0_A   48.165             218        104        2
+## 28 Query_34651     1ZIN_A   45.413             218        110        2
+## 29 Query_34651     2P3S_A   47.248             218        106        2
+## 30 Query_34651     2EU8_A   47.248             218        106        2
+## 31 Query_34651     1P3J_A   47.248             218        106        2
+## 32 Query_34651     4QBF_A   49.772             219         99        3
+## 33 Query_34651     2ORI_A   47.248             218        106        2
+## 34 Query_34651     5X6I_A   46.789             218        107        2
+## 35 Query_34651     2QAJ_A   47.005             217        106        2
+## 36 Query_34651     2OO7_A   46.789             218        107        2
+## 37 Query_34651     2OSB_A   46.789             218        107        2
+## 38 Query_34651     4MKF_A   46.789             218        107        2
+## 39 Query_34651     3TLX_A   44.393             214        106        3
+## 40 Query_34651     4MKH_A   48.624             218        101        3
+## 41 Query_34651     4QBH_A   45.872             218        109        2
+## 42 Query_34651     4TYQ_A   48.165             218        102        3
+## 43 Query_34651     4QBG_B   47.248             218        104        3
+## 44 Query_34651     4TYP_C   47.248             218        104        3
+## 45 Query_34651     4JKY_A   44.037             218        103        5
+## 46 Query_34651     2RGX_A   43.578             218        104        4
+## 47 Query_34651     4JLO_A   43.578             218        104        5
+## 48 Query_34651     1ZAK_A   42.326             215        112        3
+## 49 Query_34651     1ZD8_A   43.915             189         96        3
+## 50 Query_34651     2AK3_A   44.324             185        101        2
+## 51 Query_34651     4NTZ_A   38.532             218        119        4
+## 52 Query_34651     2AR7_A   41.304             184        102        3
+## 53 Query_34651     3NDP_A   40.761             184        103        3
+## 54 Query_34651     1P4S_A   39.785             186         77        2
+## 55 Query_34651     2CDN_A   39.785             186         77        2
+## 56 Query_34651     3L0P_A   32.735             223        131        7
+## 57 Query_34651     5X6L_A   35.784             204         98        3
+## 58 Query_34651     2XB4_A   32.735             223        131        7
+## 59 Query_34651     5X6K_A   35.294             204         99        3
+## 60 Query_34651     3ADK_A   36.066             183         89        3
+## 61 Query_34651     3UMF_A   33.333             186         92        3
+## 62 Query_34651     1Z83_A   34.973             183         91        3
+## 63 Query_34651     3CM0_A   34.434             212        106        5
+## 64 Query_34651     1UKY_A   27.962             211        117        5
+## 65 Query_34651     1TEV_A   31.963             219        109        7
+## 66 Query_34651     2BWJ_A   30.851             188         98        4
+## 67 Query_34651     1QF9_A   27.907             215        117        5
+## 68 Query_34651     1RKB_A   40.000              35         21        0
+## 69 Query_34651     3IIJ_A   40.000              35         21        0
+## 70 Query_34651     5YBV_B   34.545              55         33        2
+## 71 Query_34651     5YBV_A   34.545              55         33        2
+## 72 Query_34651     4HBD_A   34.545              55         33        2
+## 73 Query_34651     5JZV_A   40.000              35         21        0
+## 74 Query_34651     5NGH_A   40.000              40         24        0
+## 75 Query_34651     1Q3T_A   36.842              38         24        0
+## 76 Query_34651     2GA8_A   53.846              26          8        1
+## 77 Query_34651     4CVN_A   38.235              34         21        0
+## 78 Query_34651     4XRU_A   52.632              19          9        0
+## 79 Query_34651     1XE4_A   31.667              60         35        1
+## 80 Query_34651     4II9_A   31.667              60         35        1
+## 81 Query_34651     1XF8_A   43.333              30         17        0
+## 82 Query_34651     1NE9_A   43.333              30         17        0
+## 83 Query_34651     3GKR_A   43.333              30         17        0
+## 84 Query_34651     4XRP_A   52.632              19          9        0
+## 85 Query_34651     3DC0_A   38.636              44         27        0
+## 86 Query_34651     5TUE_A   36.364              55         30        1
+## 87 Query_34651     1J6P_A   40.541              37         21        1
+## 88 Query_34651     1UA7_A   38.636              44         27        0
+## 89 Query_34651     1BAG_A   38.636              44         27        0
+## 90 Query_34651     1P1M_A   40.541              37         21        1
+##    q.start q.end s.start s.end    evalue bitscore positives mlog.evalue
+## 1        1   214       1   214 8.46e-157    432.0    100.00 359.3705104
+## 2        1   214       1   214 1.51e-156    432.0    100.00 358.7911649
+## 3        1   214       1   214 8.38e-156    430.0     99.53 357.0774266
+## 4        1   214       1   214 1.19e-155    430.0     99.53 356.7267361
+## 5        1   214       1   214 1.26e-155    430.0     99.53 356.6695777
+## 6        1   214       1   214 3.77e-155    429.0     99.07 355.5736144
+## 7        1   214       1   214 2.18e-154    427.0     99.07 353.8187794
+## 8        1   214       1   214 3.65e-154    426.0     98.60 353.3033772
+## 9        1   213       1   213 9.80e-116    329.0     84.98 264.8174884
+## 10       2   213       5   216 5.44e-114    325.0     84.43 260.8009215
+## 11       2   211      10   225  4.25e-90    265.0     71.30 205.7857394
+## 12       2   209      26   235  1.01e-86    256.0     74.41 198.0123677
+## 13       1   214       1   213  1.50e-76    230.0     68.81 174.5910020
+## 14       1   214       1   213  2.88e-73    221.0     69.27 167.0309215
+## 15       1   214       1   213  5.89e-71    216.0     68.35 161.7102856
+## 16       1   213       1   212  1.08e-68    210.0     65.60 156.4988253
+## 17       1   184      17   204  5.43e-68    209.0     69.68 154.8838472
+## 18       1   213       1   212  5.58e-68    208.0     65.14 154.8565975
+## 19       1   184      17   204  1.40e-67    207.0     70.21 153.9367290
+## 20       2   213       7   217  3.76e-67    206.0     68.06 152.9487823
+## 21       1   214       5   218  5.32e-67    206.0     65.75 152.6017279
+## 22       1   214       5   218  6.47e-67    205.0     65.30 152.4060251
+## 23       1   214       1   213  2.38e-66    204.0     65.14 151.1035156
+## 24       1   214       1   213  1.15e-64    199.0     65.60 147.2256840
+## 25       1   214       5   218  2.49e-64    199.0     64.84 146.4531632
+## 26       1   214       1   213  1.34e-63    197.0     66.67 144.7701912
+## 27       1   214       1   213  5.88e-63    195.0     66.97 143.2913041
+## 28       1   214       1   213  6.55e-63    195.0     65.60 143.1833958
+## 29       1   214       1   213  9.91e-63    194.0     66.97 142.7693165
+## 30       1   214       1   213  1.04e-62    194.0     66.97 142.7210551
+## 31       1   214       1   213  1.40e-62    194.0     66.97 142.4238035
+## 32       1   214       1   213  2.24e-62    194.0     66.21 141.9537999
+## 33       1   214       1   213  3.51e-62    193.0     66.97 141.5046597
+## 34       1   214       1   213  6.67e-62    192.0     66.51 140.8626559
+## 35       1   213       1   212  7.20e-62    192.0     66.82 140.7861947
+## 36       1   214       1   213  8.38e-62    192.0     66.51 140.6344279
+## 37       1   214       1   213  1.43e-61    192.0     66.51 140.1000162
+## 38       1   214       1   213  1.59e-61    191.0     66.51 139.9939567
+## 39       2   211      31   235  1.01e-60    190.0     64.95 138.1451552
+## 40       1   213       3   214  1.03e-60    189.0     65.60 138.1255468
+## 41       1   214       1   213  2.06e-60    189.0     64.68 137.4323996
+## 42       1   213       1   212  2.53e-60    188.0     65.60 137.2268863
+## 43       1   213       1   212  4.43e-59    185.0     65.60 134.3641209
+## 44       1   213       1   212  8.33e-59    184.0     65.14 133.7326570
+## 45       1   214       1   203  3.82e-56    177.0     66.51 127.6045148
+## 46       1   214       1   203  4.38e-56    177.0     65.60 127.4677165
+## 47       1   214       1   203  1.31e-55    176.0     66.51 126.3721530
+## 48       1   214       6   209  2.63e-54    173.0     63.72 123.3726112
+## 49       1   185       8   190  2.05e-50    164.0     64.55 114.4114149
+## 50       1   185       7   189  2.81e-50    163.0     65.41 114.0960702
+## 51       1   213       6   213  1.00e-46    154.0     62.39 105.9189143
+## 52       1   182      28   207  3.54e-45    150.0     64.13 102.3522025
+## 53       1   182       6   185  2.96e-44    148.0     63.59 100.2285548
+## 54       1   182       1   155  4.92e-39    133.0     56.99  88.2075101
+## 55       1   182      21   175  8.85e-39    133.0     56.99  87.6204012
+## 56       1   209       1   218  1.89e-31    115.0     54.26  70.7435611
+## 57       3   205      13   184  2.31e-31    114.0     52.45  70.5428904
+## 58       1   209       1   218  2.50e-31    114.0     54.26  70.4638472
+## 59       3   205      13   184  3.86e-31    113.0     52.45  70.0294707
+## 60       3   184      12   167  1.59e-30    111.0     54.10  68.6138188
+## 61       3   185      32   188  8.40e-30    110.0     56.45  66.9493211
+## 62       3   184      12   167  9.85e-30    109.0     54.64  66.7900813
+## 63       3   214       7   185  4.75e-29    107.0     50.94  65.2168231
+## 64       3   210      18   196  5.14e-25     97.8     53.55  55.9275742
+## 65       3   213       6   192  3.64e-24     95.5     49.77  53.9700586
+## 66       3   187      15   173  3.76e-22     90.1     49.47  49.3324531
+## 67       3   213       9   189  1.46e-20     85.9     47.44  45.6732654
+## 68       2    36       6    40  3.90e-01     31.6     57.14   0.9416085
+## 69       2    36      13    47  4.80e-01     31.6     57.14   0.7339692
+## 70     153   204      59   113  6.20e-01     31.6     49.09   0.4780358
+## 71     153   204      56   110  6.60e-01     31.2     49.09   0.4155154
+## 72     153   204      74   128  7.20e-01     31.2     49.09   0.3285041
+## 73       2    36      39    73  7.30e-01     31.2     57.14   0.3147107
+## 74     134   173     102   141  7.80e-01     30.8     55.00   0.2484614
+## 75       1    38      17    54  2.60e+00     29.6     57.89  -0.9555114
+## 76       3    24      27    52  4.30e+00     28.9     69.23  -1.4586150
+## 77       1    34      12    45  5.60e+00     28.5     52.94  -1.7227666
+## 78       3    21      14    32  6.00e+00     28.5     84.21  -1.7917595
+## 79     110   169      80   133  6.30e+00     28.5     45.00  -1.8405496
+## 80     110   169      81   134  6.40e+00     28.5     45.00  -1.8562980
+## 81     110   139      80   109  6.40e+00     28.5     63.33  -1.8562980
+## 82     110   139      80   109  6.50e+00     28.5     63.33  -1.8718022
+## 83     110   139      81   110  6.50e+00     28.5     63.33  -1.8718022
+## 84       3    21      14    32  6.70e+00     28.5     84.21  -1.9021075
+## 85      27    70       1    44  6.80e+00     28.5     45.45  -1.9169226
+## 86     116   170      82   131  6.80e+00     28.5     43.64  -1.9169226
+## 87      98   133     345   381  7.00e+00     28.5     54.05  -1.9459101
+## 88      27    70       1    44  7.10e+00     28.5     45.45  -1.9600948
+## 89      27    70       4    47  7.50e+00     28.5     45.45  -2.0149030
+## 90      98   133     333   369  8.70e+00     28.1     54.05  -2.1633230
+##    pdb.id    acc
+## 1  1AKE_A 1AKE_A
+## 2  4X8M_A 4X8M_A
+## 3  4X8H_A 4X8H_A
+## 4  3HPR_A 3HPR_A
+## 5  1E4V_A 1E4V_A
+## 6  5EJE_A 5EJE_A
+## 7  1E4Y_A 1E4Y_A
+## 8  3X2S_A 3X2S_A
+## 9  4K46_A 4K46_A
+## 10 4NP6_A 4NP6_A
+## 11 3GMT_A 3GMT_A
+## 12 4PZL_A 4PZL_A
+## 13 5G3Y_A 5G3Y_A
+## 14 5G3Z_A 5G3Z_A
+## 15 5G40_A 5G40_A
+## 16 5X6J_A 5X6J_A
+## 17 2C9Y_A 2C9Y_A
+## 18 1S3G_A 1S3G_A
+## 19 1AK2_A 1AK2_A
+## 20 3BE4_A 3BE4_A
+## 21 1AKY_A 1AKY_A
+## 22 3AKY_A 3AKY_A
+## 23 3FB4_A 3FB4_A
+## 24 4QBI_A 4QBI_A
+## 25 1DVR_A 1DVR_A
+## 26 3DKV_A 3DKV_A
+## 27 3DL0_A 3DL0_A
+## 28 1ZIN_A 1ZIN_A
+## 29 2P3S_A 2P3S_A
+## 30 2EU8_A 2EU8_A
+## 31 1P3J_A 1P3J_A
+## 32 4QBF_A 4QBF_A
+## 33 2ORI_A 2ORI_A
+## 34 5X6I_A 5X6I_A
+## 35 2QAJ_A 2QAJ_A
+## 36 2OO7_A 2OO7_A
+## 37 2OSB_A 2OSB_A
+## 38 4MKF_A 4MKF_A
+## 39 3TLX_A 3TLX_A
+## 40 4MKH_A 4MKH_A
+## 41 4QBH_A 4QBH_A
+## 42 4TYQ_A 4TYQ_A
+## 43 4QBG_B 4QBG_B
+## 44 4TYP_C 4TYP_C
+## 45 4JKY_A 4JKY_A
+## 46 2RGX_A 2RGX_A
+## 47 4JLO_A 4JLO_A
+## 48 1ZAK_A 1ZAK_A
+## 49 1ZD8_A 1ZD8_A
+## 50 2AK3_A 2AK3_A
+## 51 4NTZ_A 4NTZ_A
+## 52 2AR7_A 2AR7_A
+## 53 3NDP_A 3NDP_A
+## 54 1P4S_A 1P4S_A
+## 55 2CDN_A 2CDN_A
+## 56 3L0P_A 3L0P_A
+## 57 5X6L_A 5X6L_A
+## 58 2XB4_A 2XB4_A
+## 59 5X6K_A 5X6K_A
+## 60 3ADK_A 3ADK_A
+## 61 3UMF_A 3UMF_A
+## 62 1Z83_A 1Z83_A
+## 63 3CM0_A 3CM0_A
+## 64 1UKY_A 1UKY_A
+## 65 1TEV_A 1TEV_A
+## 66 2BWJ_A 2BWJ_A
+## 67 1QF9_A 1QF9_A
+## 68 1RKB_A 1RKB_A
+## 69 3IIJ_A 3IIJ_A
+## 70 5YBV_B 5YBV_B
+## 71 5YBV_A 5YBV_A
+## 72 4HBD_A 4HBD_A
+## 73 5JZV_A 5JZV_A
+## 74 5NGH_A 5NGH_A
+## 75 1Q3T_A 1Q3T_A
+## 76 2GA8_A 2GA8_A
+## 77 4CVN_A 4CVN_A
+## 78 4XRU_A 4XRU_A
+## 79 1XE4_A 1XE4_A
+## 80 4II9_A 4II9_A
+## 81 1XF8_A 1XF8_A
+## 82 1NE9_A 1NE9_A
+## 83 3GKR_A 3GKR_A
+## 84 4XRP_A 4XRP_A
+## 85 3DC0_A 3DC0_A
+## 86 5TUE_A 5TUE_A
+## 87 1J6P_A 1J6P_A
+## 88 1UA7_A 1UA7_A
+## 89 1BAG_A 1BAG_A
+## 90 1P1M_A 1P1M_A
+```
+
+
+```r
+library(bio3d)
+```
 
 
 
