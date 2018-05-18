@@ -1,0 +1,319 @@
+---
+title: "class14"
+author: "Amay Dankar"
+date: "May 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Transcriptomics and analysis of RNA-seq data
+
+```{r}
+counts <- read.csv("data/airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata <-  read.csv("data/airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+View(counts)
+View(metadata)
+```
+
+Verifying metadata corresponds to correct column
+
+```{r}
+# excluding first column name "ensgene" which does not correspond to any metadata id
+colnames(counts)[-1] == metadata$id
+
+```
+
+
+
+## Exploratory differential gene expression analysis (done in an inadvisable way for demonstration purposes)
+
+
+### Obtaining means of control samples
+
+```{r}
+control <- metadata[metadata[,"dex"]=="control",]
+control.mean <- rowSums( counts[ ,control$id] )/nrow(control)
+names(control.mean) <- counts$ensgene
+
+head(control.mean)
+```
+
+### Obtaining means of treated samples
+
+```{r}
+treated <- metadata[metadata[,"dex"] == "treated",]
+treated.mean <- rowSums(counts[ ,treated$id])/nrow(treated)
+names(treated.mean) <- counts$ensgene
+
+head(treated.mean)
+```
+
+
+Storing mean counts of both for convenience and summarizing number of samples in each (in an inadvisable fashion)
+
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+head(meancounts)
+colSums(meancounts)
+```
+
+Plot mean counts for control and treated
+
+```{r}
+plot(control.mean, treated.mean, xlab = 'control', ylab = 'treated')
+```
+
+Plotting with a log axis to better illustrate differences
+
+```{r}
+plot(control.mean, treated.mean, xlab = 'control', ylab = 'treated', log = 'xy')
+```
+
+Calculating log2foldchange to better highlight differences between data, and add it to our meancounts dataframe
+
+```{r}
+meancounts$log2fc <- log2(meancounts[,'treated.mean']/meancounts[,'control.mean'])
+head(meancounts)
+```
+
+Small test of what "arr.ind" paramter does within **which()** function
+
+```{r}
+x <- matrix(1:10, ncol = 2, byrow = TRUE)
+x
+x[5,2] <- 0
+x
+which (x == 0)
+which (x == 0, arr.ind = TRUE)
+```
+
+Finding genes with 0 counts
+
+```{r}
+# labeling which values are 0
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
+head(zero.vals)
+
+#assigning vector to remove unique 0 values
+to.rm <- unique(zero.vals[,1])
+
+#removed values equal to 0 to generate new dataframe
+
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+
+```
+
+Summing up non-zero values based on upregulation or downregulation
+
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+
+paste("Up:", sum(up.ind))
+paste("Down:", sum(down.ind))
+
+```
+
+# Adding annotation data
+
+```{r}
+anno <- read.csv("data/annotables_grch38.csv")
+head(anno)
+```
+
+Using **merge()** function to merge mycounts dataframe with annotation dataframe
+
+```{r}
+results <- merge(mycounts, anno, by.x = "row.names", by.y = "ensgene")
+head(results)
+```
+
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts),
+                     column="SYMBOL",
+                     keytype="ENSEMBL",
+                     multiVals="first")
+```
+
+
+# DESeq2 Analysis 
+
+Setting up DESeq 
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+
+```{r}
+dds <- DESeq(dds)
+
+```
+
+Getting results out of DESeq transformed dds 
+
+```{r}
+res <- results(dds)
+res
+```
+
+Ordering results by p value
+
+```{r}
+resOrdered <- res[order(res$pvalue),]
+resOrdered
+```
+
+Adjusting p-value to 0.05
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+How many are significant with an adjusted p-value < 0.05? How about 0.01? Save this last set of results as resSig01.
+
+Accessing actual subset of data
+
+```{r}
+resSig05 <- subset(as.data.frame(res), padj < 0.05)
+nrow(resSig05)
+
+resSig01 <- subset(as.data.frame(res), padj < 0.01)
+nrow(resSig01)
+
+```
+
+Using either the previously generated anno object (annotations from the file annotables_grch38.csv file) or the mapIds() function (from the AnnotationDbi package) add annotation to your res01 results data.frame.
+
+Using **mapIds()** function to add "SYMBOL" column form org.Hs.eg.db database and assign correct symbol based on "ENSEMBL" key. Multiple columns must be added separately, function only does one at a time. 
+
+```{r}
+resSig01$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(resSig01),
+                     column="SYMBOL",
+                     keytype="ENSEMBL",
+                     multiVals="first")
+
+View(resSig01)
+
+```
+
+Arrange by adjusted p-value
+
+```{r}
+ord <- order( resSig01$padj )
+#View(res01[ord,])
+head(resSig01[ord,])
+```
+
+Writing csv file of results
+
+```{r}
+write.csv(resSig01[ord,], "signif01_results.csv")
+```
+
+
+# Data Visualization
+
+Getting gene of interest - CRISPLD2
+
+```{r}
+i <- grep("CRISPLD2", resSig01$symbol)
+
+# printing value at index i 
+resSig01[i,]
+
+# getting rowname (the ensemble gene id)
+rownames(resSig01[i,])
+```
+
+visualizing data with **plotCounts()** function
+
+```{r}
+# intgroup meaning interesting group 
+# gene was pulled from previous function to locate CRISPLD2 in dataframe
+plotCounts(dds, gene="ENSG00000103196", intgroup="dex")
+```
+
+Returning data 
+
+```{r}
+d <- plotCounts(dds, gene="ENSG00000103196", intgroup="dex", returnData=TRUE)
+head(d)
+```
+
+Building a box plot based on returned data from **plotCounts**
+
+```{r}
+boxplot(count ~ dex , data=d)
+```
+
+Same result plotted with **ggplot()**
+
+```{r}
+library(ggplot2)
+# color coded boxes, scaled y axis to be logarithmic, added a title
+ggplot(d, aes(dex, count)) + geom_boxplot(aes(fill=dex)) + scale_y_log10() + ggtitle("CRISPLD2")
+```
+
+## Which plot do you prefer? Ggplot offers a lot of aesthetic and functional parameters not available in base R. DataCamp course on ggplot can teach you
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
