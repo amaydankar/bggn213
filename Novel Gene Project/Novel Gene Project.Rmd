@@ -1,0 +1,31 @@
+---
+title: "Novel Gene Project"
+author: "Amay Dankar"
+date: "May 31, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading bio3d package and reading in fasta sequence from Seaview
+
+```{r}
+library(bio3d)
+ppm1f <- read.fasta("C:/Users/Amay/Desktop/PPM1F_alignment")
+head(ppm1f)
+```
+
+creating sequence identity matrix
+```{r}
+seqid <- seqidentity(ppm1f)
+```
+
+plotting results
+```{r}
+heatmap(seqid)
+```
+
